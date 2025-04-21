@@ -1,4 +1,5 @@
-﻿namespace API.Models
+﻿
+namespace API.Models
 {
     public class RegisterModel
     {
@@ -34,5 +35,6 @@
         public string? Token { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? Expiration { get; set; }
+        public IEnumerable<string> Errors { get; internal set; }
     }
 }
