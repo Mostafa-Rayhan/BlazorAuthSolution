@@ -1,0 +1,77 @@
+﻿@page "/account/register"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@using Radzen
+@using Radzen.Blazor
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+
+<RadzenCard>
+    <h3>Register</h3>
+    <RadzenTemplateForm TItem="RegisterModel" Data=@model Submit=@OnSubmit>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenTextBox @bind-Value=@model.Username Placeholder="Username" Style="width: 100%" />
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <RadzenTextBox @bind-Value=@model.Email Placeholder="Email" Style="width: 100%" />
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <RadzenPassword @bind-Value=@model.Password Placeholder="Password" Style="width: 100%" />
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Register" ButtonStyle="ButtonStyle.Primary" 
+                    Style="width: 100%" Disabled=@isBusy />
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-12">
+                <a href="/account/login">Already have an account? Login</a>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    private RegisterModel model = new();
+    private bool isBusy = false;
+
+    private async Task OnSubmit()
+    {
+        isBusy = true;
+        
+        var result = await AuthService.Register(model);
+        
+        if (result.IsSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Success",
+                Detail = "Registration successful",
+                Duration = 4000
+            });
+            
+            Navigation.NavigateTo("/account/login");
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = result.Message,
+                Duration = 4000
+            });
+        }
+        
+        isBusy = false;
+    }
+}
